@@ -16,20 +16,10 @@ pipeline {
                 sh './jenkins/scripts/test.sh' 
             }
         }
-        stage('Manual Approval') { 
-            steps {
-                script {
-                    def userInput = input id: 'manual-approval', message: 'Lanjutkan ke tahap Deploy?', ok: 'Proceed', parameters: [choice(choices: 'Proceed\nAbort', description: 'Pilih tindakan:', name: 'ACTION')]
-                    if (userInput == 'Abort') {
-                        error("Pipeline dihentikan oleh pengguna.")
-                    }
-                }
-            }
-        }
         stage('Deploy') { 
             steps {
                 sh './jenkins/scripts/deliver.sh' 
-                sleep(time: 60, unit: 'SECONDS') // Menunggu 1 menit
+                input message: 'Sudah selesai menggunakan React App? (Klik "Proceed" untuk mengakhiri)' 
                 sh './jenkins/scripts/kill.sh' 
             }
         }
