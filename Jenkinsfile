@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'node:16-buster-slim'
-            args '-p 4040:4040'
+            args '-p 6000:6000'
         }
     }
     stages {
@@ -19,7 +19,7 @@ pipeline {
         stage('Manual Approval') { 
             steps {
                 script {
-                    def userInput = input id: 'manual-approval', message: 'Lanjutkan ke tahap Deploy?', ok: 'Proceed', parameters: [choice(choices: 'Proceed\nAbort', description: 'Pilih tindakan:', name: 'ACTION')]
+                    def userInput = input message: 'Lanjutkan ke tahap Deploy?', ok: 'Proceed', parameters: [choice(choices: 'Proceed\nAbort', description: 'Pilih tindakan:', name: 'ACTION')]
                     if (userInput == 'Abort') {
                         error("Pipeline dihentikan oleh pengguna.")
                     }
@@ -29,7 +29,7 @@ pipeline {
         stage('Deploy') { 
             steps {
                 sh './jenkins/scripts/deliver.sh' 
-                sleep(time: 60, unit: 'SECONDS') // Menunggu 1 menit
+                 sleep(time: 60, unit: 'SECONDS')
                 sh './jenkins/scripts/kill.sh' 
             }
         }
